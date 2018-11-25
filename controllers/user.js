@@ -15,7 +15,7 @@ const createUser = (req, res, next) => {
         newUser
           .save()
           .then(newUser => res.json(newUser))
-          .catch(res.json);
+          .catch(err => res.json(err));
       }
     })
     .catch(console.log);
