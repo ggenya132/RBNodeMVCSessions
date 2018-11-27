@@ -49,7 +49,7 @@ const getPreviousweekWorkoutsAsArray = req => {
 const getNodeMailerClient = () => {
   return nodemailer.createTransport(sgTransport(nodemailerOptions));
 };
-const writeExcelFile = exercises => {
+const writeExcelFile = worksouts => {
   //TODO implement mapping of exercises array to workbook
   //THIS IS JUST SOME SAMPLE CODE
   var wb = new xl.Workbook();
@@ -112,6 +112,21 @@ const writeExcelFile = exercises => {
       }
     });
   };
+
+  let mappedWorkouts = worksouts.map(workout => {
+    workout => {
+      return mapExercisesForExcelWriter(workout.exercises);
+    };
+  });
+
+  writeExercises = mappedExercises => {
+    mappedExercises.forEach((mappedExercise, index) => {
+      ws.cell(index + 1, index + 1).string(mappedExercise.title);
+      ws.cell(index + 2, index + 1).string(mappedExercise.entry);
+    });
+  };
+
+  writeExercises(mappedWorkouts[0]);
 
   exercises.forEach((exercise, firstIndex) => {
     console.log(exercise.title, firstIndex);
