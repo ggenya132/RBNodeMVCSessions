@@ -68,16 +68,21 @@ const writeExcelFile = worksouts => {
     return mapExercisesForExcelWriter(workout.exercises);
   });
 
-  writeExercises = (mappedExercises, startingCell) => {
+  writeExercises = (mappedExercises, startingindex) => {
     mappedExercises.forEach((mappedExercise, index) => {
-      ws.cell(1, index + 1).string(mappedExercise.title);
-      ws.cell(2, index + 1).string(mappedExercise.entry);
+      ws.cell(1, startingindex + index + 1).string(mappedExercise.title);
+      ws.cell(2, startingindex + index + 1).string(mappedExercise.entry);
     });
 
     wb.write("ExcelTest.xlsx");
   };
 
+  let initialIndex = 0;
   writeExercises(mappedWorkouts[0]);
+  mappedWorkouts.forEach(mappedWorkout => {
+    writeExercises(mappedWorkout, initialIndex);
+    initialIndex += mappedWorkout.length;
+  });
 };
 let sampleWorkouts = [
   {

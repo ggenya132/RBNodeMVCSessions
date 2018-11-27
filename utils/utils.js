@@ -114,61 +114,24 @@ const writeExcelFile = worksouts => {
   };
 
   let mappedWorkouts = worksouts.map(workout => {
-    workout => {
-      return mapExercisesForExcelWriter(workout.exercises);
-    };
+    return mapExercisesForExcelWriter(workout.exercises);
   });
 
-  writeExercises = mappedExercises => {
+  writeExercises = (mappedExercises, startingindex) => {
     mappedExercises.forEach((mappedExercise, index) => {
-      ws.cell(index + 1, index + 1).string(mappedExercise.title);
-      ws.cell(index + 2, index + 1).string(mappedExercise.entry);
+      ws.cell(1, startingindex + index + 1).string(mappedExercise.title);
+      ws.cell(2, startingindex + index + 1).string(mappedExercise.entry);
     });
+
+    wb.write("ExcelTest.xlsx");
   };
 
+  let initialIndex = 0;
   writeExercises(mappedWorkouts[0]);
-
-  exercises.forEach((exercise, firstIndex) => {
-    console.log(exercise.title, firstIndex);
-
-    ws.cell(1, firstIndex + 1).string(exercise.title);
-
-    if (allSetsHaveSameLoad(exercise)) {
-    }
-    // exercise.sets.forEach((set, secondIndex) => {
-    //   ws.cell(secondIndex + 2, firstIndex + 1).string(
-    //     `${set.load} * ${set.performedReps}`
-    //   );
-    // });
+  mappedWorkouts.forEach(mappedWorkout => {
+    writeExercises(mappedWorkout, initialIndex);
+    initialIndex += mappedWorkout.length;
   });
-
-  // Set value of cell A1 to 100 as a number type styled with paramaters of style
-  //   ws.cell(1, 1)
-  //     .number(100)
-  //     .style(style);
-
-  //   // Set value of cell B1 to 200 as a number type styled with paramaters of style
-  //   ws.cell(1, 2)
-  //     .number(200)
-  //     .style(style);
-
-  //   // Set value of cell C1 to a formula styled with paramaters of style
-  //   ws.cell(1, 3)
-  //     .formula("A1 + B1")
-  //     .style(style);
-
-  //   // Set value of cell A2 to 'string' styled with paramaters of style
-  //   ws.cell(2, 1)
-  //     .string("string")
-  //     .style(style);
-
-  //   // Set value of cell A3 to true as a boolean type styled with paramaters of style but with an adjustment to the font size.
-  //   ws.cell(3, 1)
-  //     .bool(true)
-  //     .style(style)
-  //     .style({ font: { size: 14 } });
-
-  wb.write("Excel.xlsx");
 };
 module.exports = {
   getStartAndEndOfTheWeek,
