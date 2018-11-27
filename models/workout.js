@@ -13,11 +13,16 @@ const WorkoutSchema = new Schema({
         type: String,
         required: true
       },
-      load: {
-        type: String,
-        default: "0"
-      },
-      performedReps: [{ type: Number }],
+
+      sets: [
+        {
+          performedReps: { type: Number },
+          load: {
+            type: Number,
+            default: 0
+          }
+        }
+      ],
       _id: false
     }
   ],
@@ -31,6 +36,29 @@ const User = mongoose.model("workouts", WorkoutSchema);
 module.exports = User;
 //sample data
 [
-  { title: "db curl", load: "95", performedReps: [8, 8, 8] },
-  { title: "bb squat", load: "225", performedReps: [10, 10, 12] }
+  {
+    title: "db curl",
+    sets: [
+      { performedReps: 8, load: 185 },
+      { performedReps: 8, load: 185 },
+      { performedReps: 8, load: 185 },
+      { performedReps: 8, load: 185 }
+    ]
+  },
+  {
+    title: "bb squat",
+    sets: [
+      { performedReps: 8, load: 225 },
+      { performedReps: 8, load: 235 },
+      { performedReps: 12, load: 185 }
+    ]
+  },
+  {
+    title: "db press",
+    sets: [
+      { performedReps: 10, load: 50 },
+      { performedReps: 10, load: 50 },
+      { performedReps: 10, load: 50 }
+    ]
+  }
 ];

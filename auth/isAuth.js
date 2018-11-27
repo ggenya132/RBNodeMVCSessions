@@ -1,6 +1,4 @@
 module.exports = (req, res, next) => {
-  //force login for now
-
   let {
     session: { isLoggedIn }
   } = req;
