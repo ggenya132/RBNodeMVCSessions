@@ -49,88 +49,98 @@ const getPreviousweekWorkoutsAsArray = req => {
 const getNodeMailerClient = () => {
   return nodemailer.createTransport(sgTransport(nodemailerOptions));
 };
-const writeExcelFile = worksouts => {
-  //TODO implement mapping of exercises array to workbook
-  //THIS IS JUST SOME SAMPLE CODE
-  var wb = new xl.Workbook();
+const writeExcelFile = (worksouts, req) => {
+  return new Promise((resolve, reject) => {
+    //TODO implement mapping of exercises array to workbook
+    //THIS IS JUST SOME SAMPLE CODE
+    var wb = new xl.Workbook();
 
-  // Add Worksheets to the workbook
-  var ws = wb.addWorksheet("Sheet 1");
-  var ws2 = wb.addWorksheet("Sheet 2");
+    // Add Worksheets to the workbook
+    var ws = wb.addWorksheet("Sheet 1");
+    var ws2 = wb.addWorksheet("Sheet 2");
 
-  // Create a reusable style
-  var style = wb.createStyle({
-    font: {
-      color: "#FF0800",
-      size: 12
-    },
-    numberFormat: "$#,##0.00; ($#,##0.00); -"
-  });
-
-  let lastLoadPerformed = 0;
-
-  let allSetsHaveSameLoadAndReps = exercise =>
-    exercise.sets.every(
-      (val, i, arr) =>
-        val.load === arr[0].load && val.repPerformed === arr[0].repPerformed
-    );
-
-  //sort ensures order of reps performed is indeterminable
-  let mapExercisesForExcelWriter = exercises => {
-    return exercises.map((exercise, index) => {
-      if (allSetsHaveSameLoadAndReps(exercise)) {
-        return {
-          title: exercise.title,
-          entry: `${exercise.sets[0].load} * ${
-            exercise.sets[0].performedReps
-          } * ${exercise.sets.length}`
-        };
-      } else {
-        exercise.sets.sort((s1, s2) => s1.load - s2.load);
-        let mappedString = "";
-        let previousLoad = exercise.sets[0].load;
-        let previousReps = exercise.sets[0].performedReps;
-        let numberOfConsecutiveSets = 1;
-        exercise.sets.forEach((currentSet, index) => {
-          if (
-            currentSet.load === previousLoad &&
-            previousReps === currentSet.repPerformed
-          ) {
-            mappedString = `${previousLoad} * ${previousReps} * ${numberOfConsecutiveSets}`;
-            numberOfConsecutiveSets = numberOfConsecutiveSets + 1;
-          } else {
-            numberOfConsecutiveSets = 1;
-            previousLoad = currentSet.load;
-            previousReps = currentSet.performedReps;
-            mappedString += `, ${previousLoad} * ${previousReps} * ${numberOfConsecutiveSets}`;
-          }
-        });
-        return {
-          title: exercise.title,
-          entry: mappedString
-        };
-      }
-    });
-  };
-
-  let mappedWorkouts = worksouts.map(workout => {
-    return mapExercisesForExcelWriter(workout.exercises);
-  });
-
-  writeExercises = (mappedExercises, startingindex) => {
-    mappedExercises.forEach((mappedExercise, index) => {
-      ws.cell(1, startingindex + index + 1).string(mappedExercise.title);
-      ws.cell(2, startingindex + index + 1).string(mappedExercise.entry);
+    // Create a reusable style
+    var style = wb.createStyle({
+      font: {
+        color: "#FF0800",
+        size: 12
+      },
+      numberFormat: "$#,##0.00; ($#,##0.00); -"
     });
 
-    wb.write("ExcelTest.xlsx");
-  };
+    let lastLoadPerformed = 0;
 
-  let initialIndex = 0;
-  writeExercises(mappedWorkouts[0]);
-  mappedWorkouts.forEach(mappedWorkout => {
-    writeExercises(mappedWorkout, initialIndex);
-    initialIndex += mappedWorkout.length;
+    let allSetsHaveSameLoadAndReps = exercise =>
+      exercise.sets.every(
+        (val, i, arr) =>
+          val.load === arr[0].load && val.repPerformed === arr[0].repPerformed
+      );
+
+    //sort ensures order of reps performed is indeterminable
+    let mapExercisesForExcelWriter = exercises => {
+      return exercises.map((exercise, index) => {
+        if (allSetsHaveSameLoadAndReps(exercise)) {
+          return {
+            title: exercise.title,
+            entry: `${exercise.sets[0].load} * ${
+              exercise.sets[0].performedReps
+            } * ${exercise.sets.length}`
+          };
+        } else {
+          exercise.sets.sort((s1, s2) => s1.load - s2.load);
+          let mappedString = "";
+          let previousLoad = exercise.sets[0].load;
+          let previousReps = exercise.sets[0].performedReps;
+          let numberOfConsecutiveSets = 1;
+          exercise.sets.forEach((currentSet, index) => {
+            if (
+              currentSet.load === previousLoad &&
+              previousReps === currentSet.repPerformed
+            ) {
+              mappedString = `${previousLoad} * ${previousReps} * ${numberOfConsecutiveSets}`;
+              numberOfConsecutiveSets = numberOfConsecutiveSets + 1;
+            } else {
+              numberOfConsecutiveSets = 1;
+              previousLoad = currentSet.load;
+              previousReps = currentSet.performedReps;
+              mappedString += `, ${previousLoad} * ${previousReps} * ${numberOfConsecutiveSets}`;
+            }
+          });
+          return {
+            title: exercise.title,
+            entry: mappedString
+          };
+        }
+      });
+    };
+
+    let mappedWorkouts = worksouts.map(workout => {
+      return mapExercisesForExcelWriter(workout.exercises);
+    });
+
+    writeExercises = (mappedExercises, startingindex) => {
+      mappedExercises.forEach((mappedExercise, index) => {
+        ws.cell(1, startingindex + index + 1).string(mappedExercise.title);
+        ws.cell(2, startingindex + index + 1).string(mappedExercise.entry);
+      });
+    };
+
+    let initialIndex = 0;
+    writeExercises(mappedWorkouts[0]);
+    mappedWorkouts.forEach(mappedWorkout => {
+      writeExercises(mappedWorkout, initialIndex);
+      initialIndex += mappedWorkout.length;
+    });
+
+    let userId = req.session.user._id;
+    console.log({ userId });
+    wb.write(`${userId}.xlsx`, (err, stats) => {
+      console.log({ err, stats });
+
+      console.log({ err, stats });
+
+      err ? reject(err) : resolve({ test: "value" });
+    });
   });
 };
 module.exports = {

@@ -60,5 +60,13 @@ module.exports = User;
       { performedReps: 10, load: 50 },
       { performedReps: 10, load: 50 }
     ]
+  },
+  {
+    title: "bb benchpress",
+    sets: [
+      { performedReps: 7, load: 185 },
+      { performedReps: 5, load: 225 },
+      { performedReps: 10, load: 50 }
+    ]
   }
 ];

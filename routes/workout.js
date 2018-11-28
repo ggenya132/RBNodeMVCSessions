@@ -7,6 +7,7 @@ router.get("/", (req, res) => {
   res.json({ workout: "works" });
 });
 
+router.get("/:date", workoutController.getWorkoutByDate);
 router.post("/", workoutController.createWorkout);
 router.get("/weekly", workoutController.getWeeklyWorkouts);
 module.exports = router;

@@ -1,4 +1,5 @@
 const Workout = require("../models/workout");
+
 const {
   getStartAndEndOfTheWeek,
   getPreviousweekWorkoutsAsArray
@@ -19,6 +20,8 @@ const createWorkout = (req, res, next) => {
       res.json(err);
     });
 };
+
+//implement me you fool
 const updateWorkout = (req, res, next) => {};
 
 const getWeeklyWorkouts = async (req, res, next) => {
@@ -26,9 +29,32 @@ const getWeeklyWorkouts = async (req, res, next) => {
   console.log(arr);
   res.json(arr);
 };
+
+const getWorkoutByDate = async (req, res, next) => {
+  let { _id: user } = req.session.user;
+  let { date } = req.params;
+
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(date);
+  end.setHours(23, 59, 59, 999);
+
+  console.log({ date });
+
+  const workouts = await Workout.find(
+    //query today up to tonight
+    { date: { $gte: start, $lt: end }, user }
+  );
+
+  workouts.length === 0
+    ? res.json({ errors: ["no workouts found for this date"] })
+    : res.json(workouts);
+};
 module.exports = {
   createWorkout,
   updateWorkout,
   getWeeklyWorkouts,
-  getPreviousweekWorkoutsAsArray
+  getPreviousweekWorkoutsAsArray,
+  getWorkoutByDate
 };
