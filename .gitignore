@@ -4,3 +4,4 @@ config
 *.xls
 .sendgrid
 .DS_Store
+client/build

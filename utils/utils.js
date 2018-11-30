@@ -127,7 +127,7 @@ const writeExcelFile = (worksouts, req) => {
 
     let initialIndex = 0;
     writeExercises(mappedWorkouts[0]);
-    mappedWorkouts.forEach(mappedWorkout => {
+    mappedWorkouts.forEach(mappedWorkxout => {
       writeExercises(mappedWorkout, initialIndex);
       initialIndex += mappedWorkout.length;
     });

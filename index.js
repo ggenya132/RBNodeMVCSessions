@@ -10,6 +10,9 @@ const workoutRoutes = require("./routes/workout");
 const loginRoutes = require("./routes/login");
 const { mongoUri, sessionSecret } = require("./config/keys");
 const isAuth = require("./auth/isAuth");
+const path = require("path");
+
+// allow express to serve static content from react-build
 
 //init and configure store
 const store = new MongoDbSessionStore({
@@ -35,6 +38,8 @@ app.use(
     store
   })
 );
+console.log("before static");
+app.use(express.static(path.join(__dirname, "client/build"), { index: false }));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -44,8 +49,17 @@ app.use("/email", isAuth, emailRoutes);
 app.use("/login", loginRoutes);
 app.use("/workout", isAuth, workoutRoutes);
 
-//generic catch all route
-app.get("/", (req, res) => {
+// app.use(express.static(path.join(__dirname, "client/build")));
+
+// generic catch all route
+
+app.get("*", (req, res) => {
+  console.log("Request never comes here lol wat??");
+  res.sendFile(path.join(__dirname, "/client/build/index.html"));
+});
+
+app.get("*", (req, res) => {
+  console.log("hi");
   res.send("<h1>Welcome to RBE Node</h1>");
 });
 
